@@ -17,7 +17,6 @@ class interfaces:
 		self.mappi = list()
 		self.autos = list()
 		self.allow = list()
-		currentmode = 'n' #[m]apping, [i]face, [n]one
 		with open(filepath, 'r') as filein:
 			for line in filein:
 				if line[0] == '#':
@@ -42,17 +41,6 @@ class interfaces:
 					current = self.mappi[-1] if currentmode=='m' else self.inter[-1]
 					current[-1].append(line.strip())
 
-		print 'autos:'
-		print self.autos
-		print 'allow-'
-		print self.allow
-		print 'ifaces'
-		print self.inter
-		print 'mappings'
-		print self.mappi
-
-				
-
 	def tofile(self, filepath='/etc/network/interfaces'):
 		if os.path.isfile(filepath):
 			print "file exists, backup created..."
@@ -69,6 +57,3 @@ class interfaces:
 				fileout.write("\n")
 				fileout.write("iface %s %s %s\n" % i[:3])
 				fileout.writelines("\t%s\n" % o for o in i[-1]) 
-
-if __name__ == '__main__':
-	interfaces().tofile('./test.int')
