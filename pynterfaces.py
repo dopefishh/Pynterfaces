@@ -12,9 +12,9 @@ def mainparser(args):
 			help="Command", 
 			choices=["list", "add", "rm"], 
 			type=str)
-	parser.add_argument("-s", "--simulate", 
-			action="store_true", 
-			help="Write to stdout instead of PATH")
+	parser.add_argument("-v", "--verbose",
+			action="store_true",
+			help="More verbose messaging")
 	parser.add_argument("--input", 
 			action="store", 
 			default="/etc/network/interfaces",
@@ -25,7 +25,7 @@ def mainparser(args):
 			action="store",
 			default="/etc/network/interfaces",
 			metavar="PATH",
-			help="output filepath for interfaces file",
+			help="Output filepath for interfaces file, - for stdout",
 			type=str)
 	return parser.parse_args(args)
 
@@ -42,14 +42,13 @@ if __name__ == "__main__":
 	index = sys.argv.index("rm") if "rm" in sys.argv else sys.argv.index("list") if "list" in sys.argv else sys.argv.index("add") if "add" in sys.argv else len(sys.argv)
 	ms = mainparser(sys.argv[1:(index+1)])
 	os = secondaryparser(sys.argv[index+1:], ms.command)
-	
+	intfile = interfaces(ms.input)
 	if ms.command == "list":
-		print "list"
-		pass
+		if ms.verbose: print "List command applied"
+		print intfile
 	elif ms.command == "add":
-		print "add"
-		pass
+		if ms.verbose: print "Add command applied"
 	elif ms.command == "rm":
-		print "rm"
-		pass
+		if ms.verbose: print "Remove command applied"
+
 #	intfile.tofile("./int")
