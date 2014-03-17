@@ -40,6 +40,9 @@ class interfaces:
 				elif line:
 					current = self.mappi[-1] if currentmode=='m' else self.inter[-1]
 					current[-1].append(line.strip())
+	
+	def __str__(self):
+		return "autos: %s\nallow-*s: %s\nifaces: %s\nmappings: %s" % (str(self.autos), str(self.allow), str(self.inter), str(self.mappi))
 
 	def tofile(self, filepath='/etc/network/interfaces'):
 		if os.path.isfile(filepath):
