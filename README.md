@@ -2,6 +2,12 @@ Pynterfaces version 0.04
 ========================
 Cli for network interfaces with automatic wifi.
 
+ToDo
+====
+- Wizards for adding networks
+- Selection scripts
+- wpa\_supplicant templates
+
 Changelog
 =========
 * version 0.04 - remove command added
