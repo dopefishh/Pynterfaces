@@ -5,7 +5,13 @@ Cli for network interfaces with automatic wifi.
 ToDo
 ====
 - Wizards for adding networks
+	- loopback
+	- cabled device
+	- wifi device
+	- wifi network
 - Selection scripts
+	- cabled
+	- wifi
 - wpa\_supplicant templates
 
 Changelog
