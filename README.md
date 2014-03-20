@@ -10,6 +10,7 @@ ToDo
 
 Changelog
 =========
+* version 0.05 - loopback add function added and input from stdin en output to stdout
 * version 0.04 - remove command added
 * version 0.03 - subparsers done
 * version 0.02 - argparser is done

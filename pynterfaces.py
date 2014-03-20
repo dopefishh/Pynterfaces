@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 import argparse
+import sys
+import wizards
 from interfaces import interfaces
 
 def mainparser(args):
@@ -32,12 +33,7 @@ def mainparser(args):
 def secondaryparser(args, opttype):
 	if opttype == "rm":
 		parser = argparse.ArgumentParser(description="Help file for rm command", 
-				usage="%(prog)s [OPTIONS] rm [-h] [-t {root,log}] name")
-		parser.add_argument("-t",
-				help="Type of interface to remove [default: root]",
-				choices=["root", "log"],
-				type=str,
-				default="root")
+				usage="%(prog)s [OPTIONS] rm [-h] name")
 		parser.add_argument("name",
 				action="store",
 				help="Removes the interface given")
@@ -46,11 +42,16 @@ def secondaryparser(args, opttype):
 				usage="%(prog)s [OPTIONS] list [-h]")
 	else:
 		parser = argparse.ArgumentParser(description="Help file for add command",
-				usage="%(prog)s [OPTIONS] add [-h] {loopback, cabled, device, network")
+				usage="%(prog)s [OPTIONS] add [-h] {loopback, cabled, wifi-device, wifi-network} [key=value]")
 		parser.add_argument("type",
 				action="store",
 				help="Enter the type of interface/defice you want to add",
-				choices=["loopback", "cabled", "wifi-device", "wifi-network"])
+				choices=["loopback", "cabled", "wifi-device", "wifi-network"],
+				)
+		parser.add_argument("kwargs",
+				action="store",
+				help="Prefill questions in the format: key1=value1,key2=value2...keyn=valuen",
+				nargs="?")
 	return parser.parse_args(args)
 
 if __name__ == "__main__":
@@ -65,9 +66,12 @@ if __name__ == "__main__":
 		print intfile
 	elif ms.command == "add":
 		if ms.verbose: print "Add command applied"
+		kw = dict() if not os.kwargs else dict(i.split('=') for i in os.kwargs.split(','))
+		if ms.verbose: print "kwargs parsed: %s" % str(kw)
+		if os.type == "loopback":
+			wizards.addlo(intfile, ms.verbose, **kw)
 	elif ms.command == "rm":
 		if ms.verbose: print "Remove command applied"
 		intfile.remove(os.name, ms.verbose)
 	
 	intfile.tofile(ms.output)
-#	intfile.tofile("./int")
