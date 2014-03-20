@@ -1,0 +1,19 @@
+.\" Manpage for pynterfaces.py
+.\" Contact mart@martlubbers.net
+.TH pynterfaces 1 "20 Mar 2014" "0.05" "pynterfaces man page"
+.SH NAME
+pynterfaces \- A CLI /etc/network/interfaces editor
+.SH SYNOPSIS
+pynterfaces.py [-h] [-v] [--input PATH] [--output PATH] {list,add,rm}
+.SH DESCRIPTION
+pynterfaces is a lightweight pseudo\-interactive command line /etc/network/interfaces editor. 
+It includes many wizards for interactive adding of wifi, cabled and loopback interfaces or networks. 
+It also provides a fast and vast command line interface for automating such tasks.
+.SH OPTIONS
+Todo
+.SH SEE ALSO
+interfaces(5)
+.SH BUFS
+No known bugs.
+.SH AUTHOR
+Mart Lubbers (mart@martlubbers.net)
