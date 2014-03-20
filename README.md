@@ -1,4 +1,4 @@
-Pynterfaces version 0.04
+Pynterfaces version 0.05
 ========================
 Cli for network interfaces with automatic wifi.
 
