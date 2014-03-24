@@ -4,13 +4,33 @@
 .SH NAME
 pynterfaces \- A CLI /etc/network/interfaces editor
 .SH SYNOPSIS
-pynterfaces.py [-h] [-v] [--input PATH] [--output PATH] {list,add,rm}
+.B pynterfaces.py 
+[\fB\-h] 
+[\fB\-v] 
+[\fB\-i \fIINFILE] 
+[\fB\-o \fIOUTFILE] 
+<command> [\fBargs]
 .SH DESCRIPTION
 pynterfaces is a lightweight pseudo\-interactive command line /etc/network/interfaces editor. 
 It includes many wizards for interactive adding of wifi, cabled and loopback interfaces or networks. 
 It also provides a fast and vast command line interface for automating such tasks.
 .SH OPTIONS
-Todo
+.TP
+.BR \-h ", " \-\-help\fR
+Prints the help
+.TP
+.BR \-v ", " \-\-verbose\fR
+More verbose output
+.TP
+.BR \-i\ infile ", " \-\-input\ infile\fR
+Use an alternate the input file instead of /etc/network/interfaces, \- for stdin
+.TP
+.BR \-o\ outfile ", " -\-output\ outfile\fR
+Use an alternate output file instead of /etc/network/interfaces, \- for stdout, when exists backup is created
+.TP
+.BR command\fR
+list, add or rm
+
 .SH SEE ALSO
 interfaces(5)
 .SH BUFS

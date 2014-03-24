@@ -15,18 +15,18 @@ def mainparser(args):
 			type=str)
 	parser.add_argument("-v", "--verbose",
 			action="store_true",
-			help="More verbose messaging")
+			help="More verbose output")
 	parser.add_argument("--input", 
 			action="store", 
 			default="/etc/network/interfaces",
 			metavar="PATH",
-			help="Input filepath for interfaces file, backup is always created if file exists", 
+			help="Use an alternate input file instead of /etc/network/interfaces, - for stdin",
 			type=str)
 	parser.add_argument("--output",
 			action="store",
 			default="/etc/network/interfaces",
 			metavar="PATH",
-			help="Output filepath for interfaces file, - for stdout",
+			help="Use an alternate output file instead of /etc/network/interfaces, - for stdout, when exists backup is created.",
 			type=str)
 	return parser.parse_args(args)
 
