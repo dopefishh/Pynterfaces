@@ -42,7 +42,7 @@ def secondaryparser(args, opttype):
 				usage="%(prog)s [OPTIONS] list [-h]")
 	else:
 		parser = argparse.ArgumentParser(description="Help file for add command",
-				usage="%(prog)s [OPTIONS] add [-h] {loopback, cabled, wifi-device, wifi-network} [key=value]")
+				usage="%(prog)s [OPTIONS] add [-h] {loopback, cabled, wifi} [key=value]")
 		parser.add_argument("type",
 				action="store",
 				help="Enter the type of interface/defice you want to add",
@@ -69,7 +69,9 @@ if __name__ == "__main__":
 		kw = dict() if not os.kwargs else dict(i.split('=') for i in os.kwargs.split(','))
 		if ms.verbose: print "kwargs parsed: %s" % str(kw)
 		if os.type == "loopback":
-			wizards.addlo(intfile, ms.verbose, **kw)
+			wizards.addloopback(intfile, ms.verbose, **kw)
+		if os.type == "cabled":
+			wizards.addcabled(intfile, ms.verbose, **kw)
 	elif ms.command == "rm":
 		if ms.verbose: print "Remove command applied"
 		intfile.remove(os.name, ms.verbose)

@@ -1,22 +1,30 @@
 # -*- coding: utf-8 -*-
 
 import itertools as it
+import re
 
 def inputname(default, string, predicate=lambda x:True):
-	out = raw_input("%s [%s]: " % (string, default)) or default
+	out = raw_input("%s? [default: %s]: " % (string, default)) or default
 	return out if predicate(out) else inputname(default, string, predicate)
 
 def isip4(string):
 	try:
-		return len([int(i)>=0 and int(i)<=255 for i in string.split('.')])==4
+		return len(filter(None, (i>=0 and i<=255 for i in map(int, string.split('.')))))==4
 	except:
 		return False
 
-def isbool(string):
-	return string in ["True", "true", "T", "1", "Yes", "Y", "y"]
+def addcabled(interfaces, verbose, **kwargs):
+	if verbose: print "Add cabled wizard started"
+	root = inputname("Yes", "Is this an interface with only one use, meaning no different network settings per location", lambda x: x in ["Yes", "No"])
+	if root == "Yes":
+		if verbose: print "Create root interface with only one configuration"
+	else:
+		if verbose: print "Creating mapping interface"
 
-def addlo(interfaces, verbose, **kwargs):
-	if verbose: print "Add lo wizard started"
+	
+
+def addloopback(interfaces, verbose, **kwargs):
+	if verbose: print "Add loopback wizard started"
 	loopbacks = [i[0] for i in interfaces.inter if i[2]=="loopback"]
 	if not loopbacks:
 		if verbose: print "No loopback interfaces added yet, adding default"
@@ -34,6 +42,7 @@ def addlo(interfaces, verbose, **kwargs):
 		interfaces.inter.append( ("lo:%d" % newname, "inet", "static", data) )
 		if verbose: print "Loopback interface %s added with %s as data" % (name, str(data))
 	
-	auto = kwargs["auto"] if "auto" in kwargs else inputname("True", "Auto", isbool)
-	interfaces.autos.append(name)
-	if verbose: print "Set %s as auto" % name
+	auto = kwargs["auto"] if "auto" in kwargs else inputname("True", "Auto", lambda x: x in ["True", "False"])
+	if auto == "True":
+		interfaces.autos.append(name)
+		if verbose: print "Set %s as auto" % name
