@@ -2,6 +2,8 @@
 
 import itertools as it
 import re
+import os
+import scripts
 
 def inputname(default, string, predicate=lambda x:True):
 	out = raw_input("%s? [default: %s]: " % (string, default)) or default
@@ -13,18 +15,45 @@ def isip4(string):
 	except:
 		return False
 
+def isnum(string, lower=0, higher=999):
+	try:
+		return int(string)>=lower and int(string)<=higher
+	except: 
+		return False
+
 def addnetwork(interfaces, verbose, **kwargs):
 	pass
 
-def adddevice(interfaces, verbose, **kwargs):
+def adddevice(interfaces, prefix, verbose=False, **kwargs):
 	if verbose: print "Add device wizard started"
-	script = kwargs["script"] if "script" in kwargs else inputname("none", "mapping script, none, list or path")
+	name = kwargs["name"] if "name" in kwargs else\
+			inputname("", "Pick your network device from the detected unused devices: %s" % \
+			str([i for i in os.listdir("/sys/class/net") if i not in [j[0] for j in interfaces.inter+interfaces.mappi]]),
+			bool)
+	if verbose: print "Name: %s picked" % name
+	script = kwargs["script"] if "script" in kwargs else\
+			inputname("none", "mapping script, none, list or path")
 	if script=="none":
 		if verbose: print "No script specified"
-	if script=="list":
-		if verbose: print "Listing preconfigured scripts"
+		pass
 	else:
-		if verbose: print "Path script specified"
+		if script=="list":
+			if verbose: print "Listing preconfigured scripts\nmkdir -p %s" % prefix
+			os.system("mkdir -p %s" % prefix)
+			allscripts = list(enumerate(sorted(scripts.s.iteritems())))
+			print "Pick one of the predefined scripts\n" 
+			print "\n".join("%d: %s\t%s" % (it, i, j[0]) for it, (i, j) in allscripts)
+			pick = -1
+			while pick<0 or pick>=len(allscripts):
+				pick = int(inputname("0", "Pick the script by number", isnum))
+			script = allscripts[pick][1][0]
+			with open("%s/%s" % (prefix, script), "w") as f:
+				f.write(allscripts[pick][1][1][1])
+			if verbose: print "Script written to %s\nchmod +x %s/%s" % (prefix, prefix, script)
+		else:
+			if verbose: print "Path script specified"
+		interfaces.mappi.append( (name, ["script %s" % script]) )
+	print 'scr: "%s"' % script
 
 def addloopback(interfaces, verbose, **kwargs):
 	if verbose: print "Add loopback wizard started"

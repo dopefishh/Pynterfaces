@@ -87,7 +87,7 @@ class interfaces:
 		for m in sorted(self.mappi):
 			fileout.write("\n")
 			fileout.write("mapping %s\n" % m[0])
-			fileout.writelines("\t%s\n" % o for o in i[-1])
+			fileout.writelines("\t%s\n" % o for o in m[-1])
 		for i in sorted(self.inter):
 			fileout.write("\n")
 			fileout.write("iface %s %s %s\n" % i[:3])

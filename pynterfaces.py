@@ -43,6 +43,10 @@ def secondaryparser(args, opttype):
 	else:
 		parser = argparse.ArgumentParser(description="Help file for add command",
 				usage="%(prog)s [OPTIONS] add [-h] {loopback, device, network} [key=value]")
+		parser.add_argument("--scriptpath",
+				action="store",
+				metavar="PATH",
+				help="Script location to store the mapping scripts, default: /etc/network/mapping\nPlease use a full path and no ~")
 		parser.add_argument("type",
 				action="store",
 				help="Enter the type of interface/defice you want to add",
@@ -71,7 +75,7 @@ if __name__ == "__main__":
 		if os.type == "loopback":
 			wizards.addloopback(intfile, ms.verbose, **kw)
 		if os.type == "device":
-			wizards.adddevice(intfile, ms.verbose, **kw)
+			wizards.adddevice(intfile, os.scriptpath if os.scriptpath else "/etc/network/mapping", ms.verbose, **kw)
 		if os.type == "network":
 			wizards.addnetwork(intfile, ms.verbose, **kw)
 	elif ms.command == "rm":

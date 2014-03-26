@@ -1,4 +1,4 @@
-Pynterfaces version 0.06
+Pynterfaces version 0.07
 ========================
 Cli for network interfaces with automatic wifi.
 
@@ -15,6 +15,7 @@ ToDo
 
 Changelog
 =========
+* version 0.07 - cabled network added, mapping implemented
 * version 0.06 - optimized input, loopback finished, cabled started
 * version 0.05 - loopback add function added, input from stdin en output to stdout and skeleton manpage
 * version 0.04 - remove command added
