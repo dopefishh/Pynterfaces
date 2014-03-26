@@ -13,15 +13,18 @@ def isip4(string):
 	except:
 		return False
 
-def addcabled(interfaces, verbose, **kwargs):
-	if verbose: print "Add cabled wizard started"
-	root = inputname("Yes", "Is this an interface with only one use, meaning no different network settings per location", lambda x: x in ["Yes", "No"])
-	if root == "Yes":
-		if verbose: print "Create root interface with only one configuration"
-	else:
-		if verbose: print "Creating mapping interface"
+def addnetwork(interfaces, verbose, **kwargs):
+	pass
 
-	
+def adddevice(interfaces, verbose, **kwargs):
+	if verbose: print "Add device wizard started"
+	script = kwargs["script"] if "script" in kwargs else inputname("none", "mapping script, none, list or path")
+	if script=="none":
+		if verbose: print "No script specified"
+	if script=="list":
+		if verbose: print "Listing preconfigured scripts"
+	else:
+		if verbose: print "Path script specified"
 
 def addloopback(interfaces, verbose, **kwargs):
 	if verbose: print "Add loopback wizard started"
