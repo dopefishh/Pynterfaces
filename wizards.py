@@ -4,6 +4,7 @@ import itertools as it
 import re
 import os
 import scripts
+import subprocess
 
 
 def inputname(default, string, predicate=lambda x: True):
@@ -27,7 +28,68 @@ def isnum(string, lower=0, higher=999):
 
 
 def addnetwork(interfaces, verbose, **kwargs):
-    pass
+    if verbose:
+        print 'Add network wizard started'
+    mappdevices = [i for i, _ in interfaces.mappi]
+    device = kwargs['device'] if 'device' in kwargs else inputname(
+        '', 'Pick the device to add it to, mappable devices: %s' %
+        str(mappdevices), lambda x: x in mappdevices)
+    logic = kwargs['logic'] if 'logic' in kwargs else inputname(
+        '', 'Unique name for the logical interface', bool)
+    output = kwargs['output'] if 'output' in kwargs else inputname(
+        '', 'Value for the mapping script(SSID for ssidscript)', bool)
+    if verbose:
+        print 'map added to %s' % device
+    interfaces.mappi[[i for i, _ in interfaces.mappi].index(device)][1].append(
+        'map %s %s' % (output, logic))
+    itype = kwargs['itype'] if 'itype' in kwargs else inputname(
+        'inet', 'Pick the type [inet, inet6]',
+        lambda x: x in ['inet', 'inet6'])
+    if itype == 'inet':
+        if verbose:
+            print 'adding inet network'
+        ipget = kwargs['ipget'] if 'ipget' in kwargs else inputname(
+            'dhcp', 'Pick address acquisition method:\n%s' % 
+            sorted(options.keys()), lambda x: x in options.keys())
+        ntype = kwargs['ntype'] if 'ntype' in kwargs else inputname(
+            '', 'Pick network type [wifi, cabled, manual]',
+            lambda x: x in ['wifi', 'cabled', 'manual'])
+        interfaces.inter.append((logic, itype, ipget, list()))
+        if ntype == 'wifi':
+            spath = kwargs['spath'] if 'spath' in kwargs else inputname(
+                '', 'Config path, generate for generation wizard', bool)
+            if spath == 'generate':
+                spath = generateconfig()
+            interfaces.inter[-1][-1].append('wpa_conf %s' % spath)
+        addoptions(interfaces, ipget)
+    elif itype == 'inet6':
+        print 'not yet implemented'
+
+
+def addoptions(interfaces, ipget):
+    opts = options[ipget]
+    getmanpage(ipget)
+    while True:
+        opt = inputname(
+            'stop',
+            'Enter an option from the list or stop or man\n%s'
+            % sorted(opts.keys()),
+            lambda x: x in opts.keys() + ['stop', 'man'])
+        if opt == 'stop':
+            break
+        if opt == 'man':
+            getmanpage(ipget)
+            continue
+        value = inputname(
+            '',
+            'Enter the value for %s' % opt,
+            opts[opt])
+        del[opts[opt]]
+        interfaces.inter[-1][-1].append('%s %s' % (opt, value))
+
+
+def generateconfig():
+    print 'not yet implemented'
 
 
 def addauto(interfaces, name, verbose=False, **kwargs):
@@ -72,6 +134,7 @@ def adddevice(interfaces, prefix, verbose=False, **kwargs):
             if verbose:
                 print 'Script written to %s\nchmod +x %s/%s' %\
                     (prefix, prefix, script)
+            os.system('chmod +x %s/%s' % (prefix, script))
         else:
             if verbose:
                 print 'Path script specified'
@@ -111,5 +174,51 @@ def addloopback(interfaces, verbose=False, **kwargs):
         if verbose:
             print 'Loopback interface %s added with %s as data' % (name,
                                                                    str(data))
-
     addauto(interfaces, name, verbose, **kwargs)
+
+
+def getmanpage(method):
+    found = False
+    print ''
+    for line in subprocess.check_output(['man', 'interfaces']).split('\n'):
+        if found and re.search('(The .* Method|.*FAMILY)', line):
+            break
+        if found and line or\
+                (not found and
+                 line.strip().startswith('The %s Method' % method)):
+            print line
+            found = True
+    print ''
+
+options = {
+    'static': {
+        'address': isip4,
+        'netmask': isip4,
+        'broadcast': isip4,
+        'metric': isnum,
+        'gateway': isip4,
+        'pointopoint address': bool,
+        'hwaddress': bool,
+        'mti': isnum,
+        'scope': lambda x: x in ['global', 'link', 'host']
+        }, 'manual': {
+    }, 'dhcp': {
+        'hostname': lambda x: x in ['pump', 'dhcpd', 'uphcpc'],
+        'metric': bool,
+        'leasehours': isnum,
+        'leasetime': isnum,
+        'vendor': bool,
+        'client': bool,
+        'hwaddress': bool
+    }, 'bootp': {
+        'bootfile': bool,
+        'server': isip4,
+        'hwaddr': bool
+    }, 'tunnel': {
+
+    }, 'ppp': {
+
+    }, 'wvdial': {
+
+    }, 'ipv4ll': {
+    }}

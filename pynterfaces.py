@@ -104,7 +104,7 @@ if __name__ == '__main__':
     if ms.command == 'list':
         if ms.verbose:
             print 'List command applied'
-        print intfile
+        ms.output = "-"
     elif ms.command == 'add':
         if ms.verbose:
             print 'Add command applied'
