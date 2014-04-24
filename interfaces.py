@@ -63,10 +63,18 @@ class interfaces:
             if verbose:
                 print 'removed auto: %s' % a[1]
             del(self.autos[a[0]])
-        for a in reversed(filter(regf, enumerate(i for i, in self.mappi))):
-            if verbose:
-                print 'removed mapping: %s' % a[1]
-            del(self.mappi[a[0]])
+        for num, (nam, it) in enumerate(i for i in self.mappi):
+            if regf((None ,nam)):
+                if verbose:
+                    print 'removed mapping device %s' % nam
+                del(self.mappi[num])
+            else:
+                for nn, line in enumerate(it):
+                    line = line.split()
+                    if line[0] == 'map' and regf(line):
+                        if verbose:
+                            print 'removed map from %s' % self.mappi[num][0]
+                        del(self.mappi[num][1][nn])
         for a in reversed(filter(regf, enumerate(i[0] for i in self.inter))):
             if verbose:
                 print 'removed interface: %s' % a[1]

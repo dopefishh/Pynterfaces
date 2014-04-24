@@ -60,7 +60,6 @@ def addnetwork(interfaces, verbose, mapnet=True, **kwargs):
         interfaces.inter.append((logic, itype, ipget, list()))
         if ntype == 'wifi':
             print 'not yet implemented'
-            exit()
             spath = kwargs['spath'] if 'spath' in kwargs else inputname(
                 '', 'WPA config path, generate for generation wizard', bool)
             if spath == 'generate':
@@ -138,7 +137,7 @@ def adddevice(interfaces, prefix, verbose=False, **kwargs):
                 pick = int(inputname('0', 'Pick the script by number', isnum))
             script = allscripts[pick][1][0]
             with open('%s/%s' % (prefix, script), 'w') as f:
-                f.write(allscripts[pick][1][1][1])
+                f.write(allscripts[pick][1][1][1] % {'interface': name})
             if verbose:
                 print 'Script written to %s\nchmod +x %s/%s' %\
                     (prefix, prefix, script)
@@ -146,7 +145,7 @@ def adddevice(interfaces, prefix, verbose=False, **kwargs):
         else:
             if verbose:
                 print 'Path script specified'
-        interfaces.mappi.append((name, ['script %s' % script]))
+        interfaces.mappi.append((name, ['script %s/%s' % (prefix, script)]))
         addauto(interfaces, name, verbose, **kwargs)
 
 
