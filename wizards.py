@@ -27,21 +27,24 @@ def isnum(string, lower=0, higher=999):
         return False
 
 
-def addnetwork(interfaces, verbose, **kwargs):
+def addnetwork(interfaces, verbose, mapnet=True, **kwargs):
     if verbose:
         print 'Add network wizard started'
-    mappdevices = [i for i, _ in interfaces.mappi]
-    device = kwargs['device'] if 'device' in kwargs else inputname(
-        '', 'Pick the device to add it to, mappable devices: %s' %
-        str(mappdevices), lambda x: x in mappdevices)
+    if mapnet:
+        mappdevices = [i for i, _ in interfaces.mappi]
+        device = kwargs['device'] if 'device' in kwargs else inputname(
+            '', 'Pick the device to add it to, mappable devices: %s' %
+            str(mappdevices), lambda x: x in mappdevices)
     logic = kwargs['logic'] if 'logic' in kwargs else inputname(
         '', 'Unique name for the logical interface', bool)
-    output = kwargs['output'] if 'output' in kwargs else inputname(
-        '', 'Value for the mapping script(SSID for ssidscript)', bool)
-    if verbose:
-        print 'map added to %s' % device
-    interfaces.mappi[[i for i, _ in interfaces.mappi].index(device)][1].append(
-        'map %s %s' % (output, logic))
+    if mapnet:
+        output = kwargs['output'] if 'output' in kwargs else inputname(
+            '', 'Value for the mapping script(SSID for ssidscript)', bool)
+        if verbose:
+            print 'map added to %s' % device
+        interfaces.mappi[[
+            i for i, _ in interfaces.mappi].index(device)][1].append(
+            'map %s %s' % (output, logic))
     itype = kwargs['itype'] if 'itype' in kwargs else inputname(
         'inet', 'Pick the type [inet, inet6]',
         lambda x: x in ['inet', 'inet6'])
@@ -49,26 +52,29 @@ def addnetwork(interfaces, verbose, **kwargs):
         if verbose:
             print 'adding inet network'
         ipget = kwargs['ipget'] if 'ipget' in kwargs else inputname(
-            'dhcp', 'Pick address acquisition method:\n%s' % 
+            'dhcp', 'Pick address acquisition method:\n%s' %
             sorted(options.keys()), lambda x: x in options.keys())
         ntype = kwargs['ntype'] if 'ntype' in kwargs else inputname(
-            '', 'Pick network type [wifi, cabled, manual]',
-            lambda x: x in ['wifi', 'cabled', 'manual'])
+            '', 'Pick network generation wizard [wifi, none]',
+            lambda x: x in ['wifi', 'none'])
         interfaces.inter.append((logic, itype, ipget, list()))
         if ntype == 'wifi':
+            print 'not yet implemented'
+            exit()
             spath = kwargs['spath'] if 'spath' in kwargs else inputname(
-                '', 'Config path, generate for generation wizard', bool)
+                '', 'WPA config path, generate for generation wizard', bool)
             if spath == 'generate':
                 spath = generateconfig()
             interfaces.inter[-1][-1].append('wpa_conf %s' % spath)
         addoptions(interfaces, ipget)
     elif itype == 'inet6':
         print 'not yet implemented'
+    addoptions(interfaces, 'iface')
 
 
 def addoptions(interfaces, ipget):
     opts = options[ipget]
-    getmanpage(ipget)
+    getmanpageipget(ipget)
     while True:
         opt = inputname(
             'stop',
@@ -78,7 +84,7 @@ def addoptions(interfaces, ipget):
         if opt == 'stop':
             break
         if opt == 'man':
-            getmanpage(ipget)
+            getmanpageipget(ipget)
             continue
         value = inputname(
             '',
@@ -90,6 +96,7 @@ def addoptions(interfaces, ipget):
 
 def generateconfig():
     print 'not yet implemented'
+    exit()
 
 
 def addauto(interfaces, name, verbose=False, **kwargs):
@@ -115,7 +122,8 @@ def adddevice(interfaces, prefix, verbose=False, **kwargs):
     if script == 'none':
         if verbose:
             print 'No script specified'
-        print 'not yet implemented'
+        kwargs['logic'] = name
+        addnetwork(interfaces, verbose, False, **kwargs)
     else:
         if script == 'list':
             if verbose:
@@ -177,21 +185,37 @@ def addloopback(interfaces, verbose=False, **kwargs):
     addauto(interfaces, name, verbose, **kwargs)
 
 
-def getmanpage(method):
+def getmanpageipget(method):
     found = False
     print ''
-    for line in subprocess.check_output(['man', 'interfaces']).split('\n'):
-        if found and re.search('(The .* Method|.*FAMILY)', line):
-            break
-        if found and line or\
-                (not found and
-                 line.strip().startswith('The %s Method' % method)):
-            print line
-            found = True
+    if method == 'iface':
+        for line in subprocess.check_output(['man', 'interfaces']).split('\n'):
+            if found and re.search('IFACE OPTIONS', line):
+                break
+            if found and line or (not found and
+                    line.strip().startswith('There exists for each of the above')):
+                print line
+                found = True
+    else:
+        for line in subprocess.check_output(['man', 'interfaces']).split('\n'):
+            if found and re.search('(The .* Method|.*FAMILY)', line):
+                break
+            if found and line or\
+                    (not found and
+                     line.strip().startswith('The %s Method' % method)):
+                print line
+                found = True
     print ''
 
 options = {
-    'static': {
+    'iface': {
+        'pre-up': bool,
+        'up': bool,
+        'post-up': bool,
+        'down': bool,
+        'pre-down': bool,
+        'post-down': bool
+    }, 'static': {
         'address': isip4,
         'netmask': isip4,
         'broadcast': isip4,
