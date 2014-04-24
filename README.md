@@ -1,13 +1,16 @@
-Pynterfaces version 0.08
+Pynterfaces version 0.09
 ========================
 Cli for network interfaces with automatic wifi.
 
 ToDo
 ====
+- man and help for adding networks
 - wifi config generation wizard
 
 Changelog
 =========
+* version 0.09 - 2014-04-24 - help file and man better formatted and more
+  verbose
 * version 0.08 - 2014-04-02 - options implemented and inet almost done, rm
   fixed
 * version 0.07 - 2014-03-26 - cabled network added, mapping implemented, pep8 compliant

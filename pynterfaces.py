@@ -9,28 +9,37 @@ from interfaces import interfaces
 
 def mainparser(args):
     parser = argparse.ArgumentParser(
-        description='Edit /etc/network/interfaces via CLI\n\
-            Help for every command can be accessed by -h after the command'
+        description="""\
+pynterfaces version 0.08\n
+edit interfaces file via command line interface in an interactive or\
+non-interactive way\
+""",
+        formatter_class=argparse.RawTextHelpFormatter
         )
     parser.add_argument(
         'command',
         action='store',
-        help='Command',
+        help="""\
+main command to execute
+list - dummy command to list the interfaces file
+rm   - to remove interfaces, mappings and devices by name or regex
+add  - to add device or network to the current configuration""",
         choices=['list', 'add', 'rm'],
         type=str
         )
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
-        help='More verbose output'
+        help='enable the more verbose output'
         )
     parser.add_argument(
         '--input',
         action='store',
         default='/etc/network/interfaces',
         metavar='PATH',
-        help='Use an alternate input file instead of /etc/network/interfaces,\
-              - for stdin',
+        help="""\
+specify the input file to read from, - for stdin
+default: /etc/network/interfaces""",
         type=str
         )
     parser.add_argument(
@@ -38,8 +47,10 @@ def mainparser(args):
         action='store',
         default='/etc/network/interfaces',
         metavar='PATH',
-        help='Use an alternate output file instead of /etc/network/interfaces,\
-              - for stdout, when exists backup is created.',
+        help="""\
+specify the output file to write to, - for stdout.
+a backup file is created with the .bak suffix if the specified file already \
+exists\ndefault: /etc/network/interfaces""",
         type=str
         )
     return parser.parse_args(args)
@@ -48,47 +59,83 @@ def mainparser(args):
 def secondaryparser(args, opttype):
     if opttype == 'rm':
         parser = argparse.ArgumentParser(
-            description='Help file for rm command',
-            usage='%(prog)s [OPTIONS] rm [-h] name'
+            description="""\
+remove an interface, mapping or devices by name or regex""",
+            usage='%(prog)s [OPTIONS] rm [-h] name',
+            formatter_class=argparse.RawTextHelpFormatter
             )
         parser.add_argument(
             '--regex', '-r',
             action='store_true',
-            help='Use python regexes and remove all matching interfaces'
+            help="""\
+remove all matching interfaces, mappings or devices using a regex match \
+instead of a literal match.
+default: literal match"""
             )
         parser.add_argument(
             'name',
             action='store',
-            help='Removes the interface given'
+            help="""\
+Remove the interface(s), mapping(s) or device(s) matching the given\
+name/pattern"""
             )
     elif opttype == 'list':
         parser = argparse.ArgumentParser(
-            description='Help file for list command',
-            usage='%(prog)s [OPTIONS] list [-h]'
+            description="""\
+list the interfaces file to standard out without doing anything""",
+            usage='%(prog)s [OPTIONS] list [-h]',
+            formatter_class=argparse.RawTextHelpFormatter
             )
     else:
         parser = argparse.ArgumentParser(
-            description='Help file for add command',
-            usage='%(prog)s [OPTIONS] add [-h] \
-                {loopback, device, network} [key=value]'
+            description="""\
+add a device or network""",
+            usage="""\
+%(prog)s [OPTIONS] add [-h] {loopback, device, network} [key=value]""",
+            formatter_class=argparse.RawTextHelpFormatter
             )
         parser.add_argument(
             '--scriptpath',
             action='store',
             metavar='PATH',
-            help='Script location to store the mapping scripts, default: \
-                  /etc/network/mapping\nPlease use a full path and no ~'
+            help="""\
+path to store the script files created by the program, shell expansions not\
+allowed
+default: /etc/network/mapping/""",
             )
         parser.add_argument(
             'type',
             action='store',
-            help='Enter the type of interface/defice you want to add',
+            help="""\
+specify the type of addition you want to make
+loopback - loopback interface for a local host
+device   - device that can either be a mapping device or a fixed device
+network  - network that is picked by an already specified mapping script""",
             choices=['loopback', 'device', 'network'],
             )
         parser.add_argument(
             'kwargs',
             action='store',
-            help='Args: key1=value1,key2=value2...keyn=valuen',
+            help="""\
+key value pairs to make the process non interactive
+they have to be of the format: key1=value1,key2=value2...keyn=valuen
+general options:
+    auto    - {True, False} mark the addition as auto
+loopback:
+    name    - name for the interface, default: 'lo' or 'lo:n'
+    address - address for the interface, default: '192.168.n.1'
+    netmask - netmask for the interface, default: '255.255.255.0'
+    network - network for the interface, default: '192.168.n.0'
+        where n is the next available number form {1, 1, ...}
+device:
+    name    - hardware name of the device to add to the configuration
+    script  - {none, list, PATH} mapping script, default: none
+              none - no mapping script used, the device is treated as a network
+                     and the args for the network apply
+              list - list the predefined scripts
+              PATH - the exact path of the script
+network:
+    todo...""",
             nargs='?')
     return parser.parse_args(args)
 
@@ -96,8 +143,8 @@ if __name__ == '__main__':
     index = sys.argv.index('rm') if 'rm' in sys.argv else\
         sys.argv.index('list') if 'list' in sys.argv else\
         sys.argv.index('add') if 'add' in sys.argv else len(sys.argv)
-    ms = mainparser(sys.argv[1:(index+1)])
-    os = secondaryparser(sys.argv[index+1:], ms.command)
+    ms = mainparser(sys.argv[1:(index + 1)])
+    os = secondaryparser(sys.argv[index + 1:], ms.command)
 
     intfile = interfaces(ms.input)
 

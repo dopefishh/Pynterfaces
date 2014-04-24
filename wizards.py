@@ -113,7 +113,7 @@ def adddevice(interfaces, prefix, verbose=False, **kwargs):
     name = kwargs['name'] if 'name' in kwargs else inputname(
         '', 'Pick your network device from the detected unused devices: %s' %
         str([i for i in os.listdir('/sys/class/net') if i not in
-            [j[0] for j in interfaces.inter+interfaces.mappi]]), bool)
+            [j[0] for j in interfaces.inter + interfaces.mappi]]), bool)
     if verbose:
         print 'Name: %s picked' % name
     script = kwargs['script'] if 'script' in kwargs else\
@@ -192,7 +192,8 @@ def getmanpageipget(method):
             if found and re.search('IFACE OPTIONS', line):
                 break
             if found and line or (not found and
-                    line.strip().startswith('There exists for each of the above')):
+                    line.strip().startswith(
+                        'There exists for each of the above')):
                 print line
                 found = True
     else:
