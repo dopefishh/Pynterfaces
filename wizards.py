@@ -44,7 +44,7 @@ def addnetwork(interfaces, verbose, mapnet=True, **kwargs):
             print 'map added to %s' % device
         interfaces.mappi[[
             i for i, _ in interfaces.mappi].index(device)][1].append(
-            'map %s %s' % (output, logic))
+            'map %s %s' % (logic, output))
     itype = kwargs['itype'] if 'itype' in kwargs else inputname(
         'inet', 'Pick the type [inet, inet6]',
         lambda x: x in ['inet', 'inet6'])
